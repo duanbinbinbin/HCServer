@@ -4,8 +4,9 @@ HEADERS += \
     json.h
 
 SOURCES += \
-    HCServer.cpp \
     main.cpp \
-    json.cpp
+    json.cpp \
+    handlerequest.cpp \
+    HCServer.cpp
 
 CONFIG += TUFAO1 C++11

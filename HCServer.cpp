@@ -23,60 +23,212 @@ HCServer::HCServer(QObject *parent) : QObject(parent)
             this, SLOT(slotRequestReady(Tufao::HttpServerRequest&,Tufao::HttpServerResponse&)));
 }
 
-// handle register
-// result: handle result
-int handle_reg(Json json, QString &result)
+// function: handle user or driver register
+// result: get register result send to response
+int handle_reg(Json json, QByteArray &result)
 {
     int ret = 0;
-    QString username = json.parse(HC_USERNAME);
-    QString password = json.parse(HC_PASSWORD);
+    Json res_json;
 
-    // register interface ...   result...
-    ret = registerInterface(username, password);
+    res_json.insert(HC_CMD, HC_REG);
+
+    // user or driver register interface ...
+    ret = reg_userOrDriver(json, res_json);
     if (ret != 0)
     {
-        result = HC_ERR;
-        qDebug() << "handle_reg register err" << endl;
+        res_json.insert(HC_RESULT, HC_ERR);
+        res_json.insert(HC_REASON, QString("reg_userOrDriver err"));
+        qDebug() << "handle_reg register err: %d" << ret << endl;
     }
     else
     {
-        result = HC_OK;
+        res_json.insert(HC_RESULT, HC_OK);
     }
+
+    result = res_json.toJson();
 
     return ret;
 }
 
 /*
 * function: handle user or dirver login
-* result: get login result
+* result: get user or driver login result send to response
 */
-int handle_login(Json json, QString &result)
+int handle_login(Json json, QByteArray &result)
 {
     int ret = 0;
+    Json res_json;
 
-    QString username = json.parse(HC_USERNAME);
-    QString password = json.parse(HC_PASSWORD);
+    res_json.insert(HC_CMD, HC_LOGIN);
 
-    // login interface ...
-    ret = loginInterface(username, password);
+    // driver or user login interface ...
+    ret = login_userOrDriver(json, res_json);
     if (ret != 0)
     {
-        result = HC_ERR;
-        qDebug() << "handle_login login err" << endl;
+        res_json.insert(HC_RESULT, HC_ERR);
+        res_json.insert(HC_REASON, QString("login_userOrDriver err"));
+        qDebug() << "login_userOrDriver user or driver login err: %d" << ret << endl;
     }
     else
     {
-        result = HC_OK;
+        res_json.insert(HC_RESULT, HC_OK);
     }
+
+    result = res_json.toJson();
+
+    return ret;
+}
+
+/*
+* function: handle driver update position
+* result: get driver update position result send to response
+*/
+int handle_driverUpdatepos(Json json, QByteArray &result)
+{
+    int ret = 0;
+    Json res_json;
+
+    res_json.insert(HC_CMD, HC_UPDATEDRIVERPOS);
+
+    // update driver position interface ...
+    ret = update_driver_pos(json, res_json);
+    if (ret != 0)
+    {
+        res_json.insert(HC_RESULT, HC_ERR);
+        res_json.insert(HC_REASON, QString("update_driver_pos err"));
+        qDebug() << "update_driver_pos update driver position err: %d" << ret << endl;
+    }
+    else
+    {
+        res_json.insert(HC_RESULT, HC_OK);
+    }
+
+    result = res_json.toJson();
+
+    return ret;
+}
+
+/*
+* function: handle driver status update
+* result: get driver status update result
+*/
+int handle_driver_status(Json json, QByteArray &result)
+{
+    int ret = 0;
+    Json res_json;
+
+    res_json.insert(HC_CMD, HC_UPDATEDRIVERSTATUS);
+
+    // update driver status interface ...
+    ret = update_driver_status(json, res_json);
+    if (ret != 0)
+    {
+        res_json.insert(HC_RESULT, HC_ERR);
+        res_json.insert(HC_REASON, QString("update_driver_status err"));
+        qDebug() << "update_driver_status update driver status err: %d" << ret << endl;
+    }
+    else
+    {
+        res_json.insert(HC_RESULT, HC_OK);
+    }
+
+    result = res_json.toJson();
+
+    return ret;
+}
+
+/*
+* function: handle user status update
+* result: get user status update result
+*/
+int handle_user_status(Json json, QByteArray &result)
+{
+    int ret = 0;
+    Json res_json;
+
+    res_json.insert(HC_CMD, HC_UPDATEUSERORDERSTATUS);
+
+    // update user status interface ...
+    ret = update_user_status(json, res_json);
+    if (ret != 0)
+    {
+        res_json.insert(HC_RESULT, HC_ERR);
+        res_json.insert(HC_REASON, QString("update_user_status err"));
+        qDebug() << "update_user_status update user status err: %d" << ret << endl;
+    }
+    else
+    {
+        res_json.insert(HC_RESULT, HC_OK);
+    }
+
+    result = res_json.toJson();
+
+    return ret;
+}
+
+/*
+* function: handle user request order
+* result: get user request order result
+*/
+int handle_user_request_order(Json json, QByteArray &result)
+{
+    int ret = 0;
+    Json res_json;
+
+    res_json.insert(HC_CMD, HC_ORDERREQUEST);
+
+    // update user request order interface ...
+    ret = user_request_order(json, res_json);
+    if (ret != 0)
+    {
+        res_json.insert(HC_RESULT, HC_ERR);
+        res_json.insert(HC_REASON, QString("user_request_order err"));
+        qDebug() << "user_request_order user request order err: %d" << ret << endl;
+    }
+    else
+    {
+        res_json.insert(HC_RESULT, HC_OK);
+    }
+
+    result = res_json.toJson();
+
+    return ret;
+}
+
+/*
+* function: handle update user position
+* result: update user position result
+*/
+int handle_update_user_position(Json json, QByteArray &result)
+{
+    int ret = 0;
+    Json res_json;
+
+    res_json.insert(HC_CMD, HC_UPDATEUSERPOS);
+
+    // update user position interface ...
+    ret = update_user_position(json, res_json);
+    if (ret != 0)
+    {
+        res_json.insert(HC_RESULT, HC_ERR);
+        res_json.insert(HC_REASON, QString("update_user_position err"));
+        qDebug() << "update_user_position update user position err: %d" << ret << endl;
+    }
+    else
+    {
+        res_json.insert(HC_RESULT, HC_OK);
+    }
+
+    result = res_json.toJson();
 
     return ret;
 }
 
 /*function: request data
-  result: handle result
-  command: handle cmd
+  result: get result
+  command: get cmd
 */
-int requestData(Tufao::HttpServerRequest &request, QString &result, QString &command)
+int requestData(Tufao::HttpServerRequest &request, QByteArray &result)
 {
     int ret = 0;
 
@@ -94,64 +246,24 @@ int requestData(Tufao::HttpServerRequest &request, QString &result, QString &com
         ret = handle_login(json, result);
         break;
 
-    default:
-        qDebug() << "requestData unknown command" << endl;
-        break;
-    }
-    command = cmd;
-
-    return ret;
-}
-
-/* function: handle response reg
- * result: handle result
- * */
-int response_reg(Tufao::HttpServerResponse &response, QString &result)
-{
-    Json res_json;
-    res_json.insert(HC_CMD, HC_REG);
-    res_json.insert(HC_RESULT, result);
-    if (result != HC_OK)    // if resgister err
-    {
-        res_json.insert(HC_REASON, QString("register err"));
-    }
-
-    QByteArray res_buf = res_json.toJson();
-    response.writeHead(Tufao::HttpResponseStatus::OK);
-    response.end(res_buf);
-}
-
-int response_login(Tufao::HttpServerResponse &response, QString &result)
-{
-    Json login_json;
-    login_json.insert(HC_CMD, HC_LOGIN);
-    login_json.insert(HC_RESULT, result);
-    if (result != HC_OK)    // if login err
-    {
-        login_json.insert(HC_REASON, QString("login err"));
-    }
-
-    QByteArray login_buf = login_json.toJson();
-    response.writeHead(Tufao::HttpResponseStatus::OK);
-    response.end(login_buf);
-}
-
-/*function: response data
-  result: handle result
-  command: handle cmd
-*/
-int responseData(Tufao::HttpServerResponse &response, QString &result, QString &command)
-{
-    int ret = 0;
-
-    switch (command) {
-
-    case HC_REG:
-        ret = response_reg(response, result);
+    case HC_UPDATEDRIVERPOS:  // diver update position
+        ret = handle_driverUpdatepos(json, result);
         break;
 
-    case HC_LOGIN:
-        ret = response_login(response, result);
+    case HC_UPDATEDRIVERSTATUS:   // update driver status
+        ret = handle_driver_status(json, result);
+        break;
+
+    case HC_UPDATEUSERORDERSTATUS:    // update user status
+        ret = handle_user_status(json, result);
+        break;
+
+    case HC_ORDERREQUEST:   // user request order
+        ret = handle_user_request_order(json, result);
+        break;
+
+    case HC_UPDATEUSERPOS:  // update user position
+        ret = handle_update_user_position(json, result);
         break;
 
     default:
@@ -165,11 +277,10 @@ int responseData(Tufao::HttpServerResponse &response, QString &result, QString &
 void HCServer::slotRequestReady(Tufao::HttpServerRequest &request, Tufao::HttpServerResponse &response)
 {
     int ret = 0;
-    QString result;
-    QString command;
+    QByteArray result;  // in request get data
 
     // request data
-    ret = requestData(request, result, command);
+    ret = requestData(request, result);
     if (ret != 0)
     {
         qDebug() << "requestData err" << endl;
@@ -177,12 +288,13 @@ void HCServer::slotRequestReady(Tufao::HttpServerRequest &request, Tufao::HttpSe
     }
 
     // response data
-    ret = responseData(response, result, command);
-    if (ret != 0)
-    {
-        qDebug() << "responseData err" << endl;
-        return;
-    }
+    response.writeHead(Tufao::HttpResponseStatus::OK);
+    response.end(result);    // send data
+#if 0
+    QByteArray a = "ok"; json
+    Json json(a);
+    json
+#endif
 
-    qDebug() << "slotRequestReady handle success" << endl;
+    qDebug() << "slotRequestReady handle success!" << endl;
 }
