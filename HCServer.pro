@@ -7,6 +7,9 @@ SOURCES += \
     main.cpp \
     json.cpp \
     handlerequest.cpp \
-    HCServer.cpp
+    HCServer.cpp \
+    main1.cpp \
+    redis.cpp
 
 CONFIG += TUFAO1 C++11
+LIBS += -lhiredis

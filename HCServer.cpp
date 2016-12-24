@@ -26,7 +26,7 @@ HCServer::HCServer(QObject *parent) : QObject(parent)
 
 // function: handle user or driver register
 // result: get register result send to response
-int handle_reg(Json json, QByteArray &result)
+int handle_reg(Json& json, QByteArray &result)
 {
     int ret = 0;
     Json res_json;
@@ -55,7 +55,7 @@ int handle_reg(Json json, QByteArray &result)
 * function: handle user or dirver login
 * result: get user or driver login result send to response
 */
-int handle_login(Json json, QByteArray &result)
+int handle_login(Json& json, QByteArray &result)
 {
     int ret = 0;
     Json res_json;
@@ -84,7 +84,7 @@ int handle_login(Json json, QByteArray &result)
 * function: handle driver update position
 * result: get driver update position result send to response
 */
-int handle_driverUpdatepos(Json json, QByteArray &result)
+int handle_driverUpdatepos(Json& json, QByteArray &result)
 {
     int ret = 0;
     Json res_json;
@@ -113,7 +113,7 @@ int handle_driverUpdatepos(Json json, QByteArray &result)
 * function: handle driver status update
 * result: get driver status update result
 */
-int handle_driver_status(Json json, QByteArray &result)
+int handle_driver_status(Json& json, QByteArray &result)
 {
     int ret = 0;
     Json res_json;
@@ -142,7 +142,7 @@ int handle_driver_status(Json json, QByteArray &result)
 * function: handle user status update
 * result: get user status update result
 */
-int handle_user_status(Json json, QByteArray &result)
+int handle_user_status(Json& json, QByteArray &result)
 {
     int ret = 0;
     Json res_json;
@@ -171,7 +171,7 @@ int handle_user_status(Json json, QByteArray &result)
 * function: handle user request order
 * result: get user request order result
 */
-int handle_user_request_order(Json json, QByteArray &result)
+int handle_user_request_order(Json& json, QByteArray &result)
 {
     int ret = 0;
     Json res_json;
@@ -200,7 +200,7 @@ int handle_user_request_order(Json json, QByteArray &result)
 * function: handle update user position
 * result: update user position result
 */
-int handle_update_user_position(Json json, QByteArray &result)
+int handle_update_user_position(Json& json, QByteArray &result)
 {
     int ret = 0;
     Json res_json;
@@ -238,38 +238,33 @@ int requestData(Tufao::HttpServerRequest &request, QByteArray &result)
     Json json(data);
     QString cmd = json.parse(HC_CMD).toString();
 
-    switch (cmd) {
-    case HC_REG:    // driver or user register
-        ret = handle_reg(json, result);
-        break;
-
-    case HC_LOGIN:  // driver or user login
+    if (cmd == HC_REG)   // driver or user register
+    {
+         ret = handle_reg(json, result);
+    }
+    else if(cmd == HC_LOGIN)     // driver or user login
+    {
         ret = handle_login(json, result);
-        break;
-
-    case HC_UPDATEDRIVERPOS:  // diver update position
+    }
+    else if (cmd == HC_UPDATEDRIVERPOS) // diver update position
+    {
         ret = handle_driverUpdatepos(json, result);
-        break;
-
-    case HC_UPDATEDRIVERSTATUS:   // update driver status
+    }
+    else if (cmd == HC_UPDATEDRIVERSTATUS)   // update driver status
+    {
         ret = handle_driver_status(json, result);
-        break;
-
-    case HC_UPDATEUSERORDERSTATUS:    // update user status
-        ret = handle_user_status(json, result);
-        break;
-
-    case HC_ORDERREQUEST:   // user request order
+    }
+    else if (cmd == HC_ORDERREQUEST)   // user request order
+    {
         ret = handle_user_request_order(json, result);
-        break;
-
-    case HC_UPDATEUSERPOS:  // update user position
+    }
+    else if (cmd == HC_UPDATEUSERPOS)  // update user position
+    {
         ret = handle_update_user_position(json, result);
-        break;
-
-    default:
+    }
+    else
+    {
         qDebug() << "requestData unknown command" << endl;
-        break;
     }
 
     return ret;

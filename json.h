@@ -13,6 +13,7 @@ class Json : public QObject
 public:
     explicit Json(QObject *parent = 0);
     explicit Json(QByteArray array,QObject *parent = 0);
+    Json(const Json& json);
     QString encry(QString key);
     int insert(QString key,QString value);
     int insert(QString key,int value);

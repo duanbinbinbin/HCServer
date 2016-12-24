@@ -11,6 +11,11 @@ Json::Json(QByteArray array, QObject *parent): QObject(parent)
     *obj = QJsonDocument::fromJson(array).object();
 }
 
+Json::Json(const Json &json)
+{
+    this->obj = json.obj;
+}
+
 QString Json::encry(QString key)
 {
     char* tmp = key.toUtf8().data();
