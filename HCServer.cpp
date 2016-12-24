@@ -5,6 +5,7 @@
 #include <QJsonArray>
 #include "def.h"
 #include "json.h"
+#include "handlerequest.cpp"
 
 HCServer::HCServer(QObject *parent) : QObject(parent)
 {
@@ -290,11 +291,6 @@ void HCServer::slotRequestReady(Tufao::HttpServerRequest &request, Tufao::HttpSe
     // response data
     response.writeHead(Tufao::HttpResponseStatus::OK);
     response.end(result);    // send data
-#if 0
-    QByteArray a = "ok"; json
-    Json json(a);
-    json
-#endif
 
     qDebug() << "slotRequestReady handle success!" << endl;
 }
