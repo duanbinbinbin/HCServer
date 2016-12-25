@@ -14,7 +14,7 @@ typedef MYSQL_ROW ROW;
 #define HC_ADDRESS "127.0.0.1"
 #define HC_USER "root"
 #define HC_PASSWD "123456"
-#define HC_DB "hc"
+#define HC_DB "HC"
 #define HC_REDIS_PORT 6379
 
 typedef enum BOOL{FALSE=0,TRUE=1} Bool;

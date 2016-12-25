@@ -14,14 +14,15 @@ int reg_userOrDriver(Json inJson, Json outJson)
     int sex = inJson.parse("sex").toInt();
     QString tel = inJson.parse("tel").toString();
     QString id = inJson.parse("id").toString();
-    QString cardId = inJson.parse("cardId").toString();
+    QString cardid = inJson.parse("cardid").toString();
 
     QString sql = QString("insert into passenger values('%1','%2','%3','%4','%5','%6','%7')").arg(id).arg(username)
-                    .arg(password).arg(age).arg(sex).arg(tel).arg(cardId);
+                    .arg(password).arg(age).arg(sex).arg(tel).arg(cardid);
     ret = SqlConn::getInstance()->insert(sql);
+    qDebug() << "reg_userOrDriver ret :" << ret << endl;
     if (ret != 0)
     {
-        qDebug() << "insert data err: %d" << ret << endl;
+        qDebug() << "insert data err: " << ret << endl;
     }
 
     return ret;

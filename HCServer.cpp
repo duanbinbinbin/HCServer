@@ -51,7 +51,9 @@ int handle_reg(Json& json, QByteArray &result)
     else
     {
         res_json.insert(HC_RESULT, HC_OK);
+        qDebug() << "res_json = " << res_json.toJson() << endl;
     }
+
 
     result = res_json.toJson();
 
@@ -325,6 +327,7 @@ void HCServer::slotRequestReady(Tufao::HttpServerRequest &request, Tufao::HttpSe
         return;
     }
 
+    qDebug() << "response result: " << result << endl;
     // response data
     response.writeHead(Tufao::HttpResponseStatus::OK);
     response.end(result);    // send data
