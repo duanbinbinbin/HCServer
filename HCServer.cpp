@@ -24,8 +24,15 @@ HCServer::HCServer(QObject *parent) : QObject(parent)
             this, SLOT(slotRequestReady(Tufao::HttpServerRequest&,Tufao::HttpServerResponse&)));
 }
 
-// function: handle user or driver register
-// result: get register result send to response
+/*
+* function:
+*   Handle user registration and driver.
+* param:
+*   json: Request data.
+*   result: Users and driver registration results are obtained.
+* return:
+*   int: success return 0, error return is not 0.
+*/
 int handle_reg(Json& json, QByteArray &result)
 {
     int ret = 0;
@@ -52,8 +59,13 @@ int handle_reg(Json& json, QByteArray &result)
 }
 
 /*
-* function: handle user or dirver login
-* result: get user or driver login result send to response
+* function:
+*   Handle user login and driver.
+* param:
+*   json: Request data.
+*   result: The result of get login.
+* return:
+*   int: success return 0, error return is not 0.
 */
 int handle_login(Json& json, QByteArray &result)
 {
@@ -81,8 +93,13 @@ int handle_login(Json& json, QByteArray &result)
 }
 
 /*
-* function: handle driver update position
-* result: get driver update position result send to response
+* function:
+*   Update the driver's seat.
+* param:
+*   json: Request data.
+*   result: Get the driver's seat result.
+* return:
+*   int: success return 0, error return is not 0.
 */
 int handle_driverUpdatepos(Json& json, QByteArray &result)
 {
@@ -110,8 +127,13 @@ int handle_driverUpdatepos(Json& json, QByteArray &result)
 }
 
 /*
-* function: handle driver status update
-* result: get driver status update result
+* function:
+*   Update driver status.
+* param:
+*   json: Request data.
+*   result: The driver state results.
+* return:
+*   int: success return 0, error return is not 0.
 */
 int handle_driver_status(Json& json, QByteArray &result)
 {
@@ -139,8 +161,13 @@ int handle_driver_status(Json& json, QByteArray &result)
 }
 
 /*
-* function: handle user status update
-* result: get user status update result
+* function:
+*   Handle user with a new state.
+* param:
+*   json: Request data.
+*   result: Get the current state of the user.
+* return:
+*   int: success return 0, error return is not 0.
 */
 int handle_user_status(Json& json, QByteArray &result)
 {
@@ -168,8 +195,13 @@ int handle_user_status(Json& json, QByteArray &result)
 }
 
 /*
-* function: handle user request order
-* result: get user request order result
+* function:
+*   Handle user request order.
+* param:
+*   json: Request data.
+*   result: Get the result of the user request order.
+* return:
+*   int: success return 0, error return is not 0.
 */
 int handle_user_request_order(Json& json, QByteArray &result)
 {
@@ -197,8 +229,13 @@ int handle_user_request_order(Json& json, QByteArray &result)
 }
 
 /*
-* function: handle update user position
-* result: update user position result
+* function:
+*   Update the position of the user.
+* param:
+*   json: Request data.
+*   result: Get the result of the user position result.
+* return:
+*   int: success return 0, error return is not 0.
 */
 int handle_update_user_position(Json& json, QByteArray &result)
 {
@@ -225,9 +262,14 @@ int handle_update_user_position(Json& json, QByteArray &result)
     return ret;
 }
 
-/*function: request data
-  result: get result
-  command: get cmd
+/*
+* function:
+*   Handle the request data.
+* param:
+*   json: Request data.
+*   result: Get the result of the request.
+* return:
+*   int: success return 0, error return is not 0.
 */
 int requestData(Tufao::HttpServerRequest &request, QByteArray &result)
 {
@@ -238,27 +280,27 @@ int requestData(Tufao::HttpServerRequest &request, QByteArray &result)
     Json json(data);
     QString cmd = json.parse(HC_CMD).toString();
 
-    if (cmd == HC_REG)   // driver or user register
+    if (cmd == HC_REG)                                  // driver or user register
     {
          ret = handle_reg(json, result);
     }
-    else if(cmd == HC_LOGIN)     // driver or user login
+    else if(cmd == HC_LOGIN)                            // driver or user login
     {
         ret = handle_login(json, result);
     }
-    else if (cmd == HC_UPDATEDRIVERPOS) // diver update position
+    else if (cmd == HC_UPDATEDRIVERPOS)                 // diver update position
     {
         ret = handle_driverUpdatepos(json, result);
     }
-    else if (cmd == HC_UPDATEDRIVERSTATUS)   // update driver status
+    else if (cmd == HC_UPDATEDRIVERSTATUS)              // update driver status
     {
         ret = handle_driver_status(json, result);
     }
-    else if (cmd == HC_ORDERREQUEST)   // user request order
+    else if (cmd == HC_ORDERREQUEST)                    // user request order
     {
         ret = handle_user_request_order(json, result);
     }
-    else if (cmd == HC_UPDATEUSERPOS)  // update user position
+    else if (cmd == HC_UPDATEUSERPOS)                   // update user position
     {
         ret = handle_update_user_position(json, result);
     }

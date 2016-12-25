@@ -1,7 +1,10 @@
 HEADERS += \
     HCServer.h \
     def.h \
-    json.h
+    json.h \
+    util.h \
+    sqlconn.h \
+    hcdef.h
 
 SOURCES += \
     main.cpp \
@@ -9,7 +12,12 @@ SOURCES += \
     handlerequest.cpp \
     HCServer.cpp \
     main1.cpp \
-    redis.cpp
+    redis.cpp \
+    util.cpp \
+    sqlconn.cpp
 
 CONFIG += TUFAO1 C++11
 LIBS += -lhiredis
+QT +=network sql
+LIBS +=-L/usr/local/lib -ltufao1 -lmysqlclient -lhiredis
+INCLUDEPATH +=-I/usr/local/include -I/usr/include
