@@ -11,13 +11,13 @@ HCServer::HCServer(QObject *parent) : QObject(parent)
 {
     server = new Tufao::HttpServer;
 
-    if (server->listen(QHostAddress::Any, 8080))
+    if (server->listen(QHostAddress::Any, 12306))
     {
-        qDebug() << "listen to 8080 success!" << endl;
+        qDebug() << "listen to 12306 success!" << endl;
     }
     else
     {
-        qDebug() << "listen to 8080 error!" << endl;
+        qDebug() << "listen to 12306 error!" << endl;
     }
 
     connect(server, SIGNAL(requestReady(Tufao::HttpServerRequest&,Tufao::HttpServerResponse&)),
@@ -38,25 +38,20 @@ int handle_reg(Json& json, QByteArray &result)
     int ret = 0;
     Json res_json;
 
-    res_json.insert(HC_CMD, HC_REG);
-
+    ret = res_json.insert(HC_CMD, HC_REG);
     // user or driver register interface ...
-    ret = reg_userOrDriver(json, res_json);
+    ret = reg_userOrDriver(json);
     if (ret != 0)
     {
-        res_json.insert(HC_RESULT, HC_ERR);
-        res_json.insert(HC_REASON, QString("reg_userOrDriver err"));
+        res_json.insert(QString(HC_RESULT), QString(HC_ERR));
+        res_json.insert(QString(HC_REASON), QString("reg_userOrDriver err"));
         qDebug() << "handle_reg register err: %d" << ret << endl;
     }
     else
     {
-        res_json.insert(HC_RESULT, HC_OK);
-        qDebug() << "res_json = " << res_json.toJson() << endl;
+       res_json.insert(QString(HC_RESULT),QString(HC_OK));
     }
-
-
     result = res_json.toJson();
-
     return ret;
 }
 
@@ -75,22 +70,19 @@ int handle_login(Json& json, QByteArray &result)
     Json res_json;
 
     res_json.insert(HC_CMD, HC_LOGIN);
-
     // driver or user login interface ...
-    ret = login_userOrDriver(json, res_json);
+    ret = login_userOrDriver(json);
     if (ret != 0)
     {
         res_json.insert(HC_RESULT, HC_ERR);
         res_json.insert(HC_REASON, QString("login_userOrDriver err"));
-        qDebug() << "login_userOrDriver user or driver login err: %d" << ret << endl;
+        qDebug() << "login_userOrDriver user or driver login err: " << ret << endl;
     }
     else
     {
         res_json.insert(HC_RESULT, HC_OK);
     }
-
     result = res_json.toJson();
-
     return ret;
 }
 
@@ -317,7 +309,7 @@ int requestData(Tufao::HttpServerRequest &request, QByteArray &result)
 void HCServer::slotRequestReady(Tufao::HttpServerRequest &request, Tufao::HttpServerResponse &response)
 {
     int ret = 0;
-    QByteArray result;  // in request get data
+    QByteArray result;  // Response data
 
     // request data
     ret = requestData(request, result);
@@ -327,7 +319,6 @@ void HCServer::slotRequestReady(Tufao::HttpServerRequest &request, Tufao::HttpSe
         return;
     }
 
-    qDebug() << "response result: " << result << endl;
     // response data
     response.writeHead(Tufao::HttpResponseStatus::OK);
     response.end(result);    // send data

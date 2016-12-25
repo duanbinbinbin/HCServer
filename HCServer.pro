@@ -18,6 +18,7 @@ SOURCES += \
 
 CONFIG += TUFAO1 C++11
 LIBS += -lhiredis
+LIBS += -lcurl
 QT +=network sql
 LIBS +=-L/usr/local/lib -ltufao1 -lmysqlclient -lhiredis
 INCLUDEPATH +=-I/usr/local/include -I/usr/include

@@ -22,7 +22,7 @@ public:
     QByteArray toJson();
     ~Json();
 private:
-    QJsonObject *obj;
+    QJsonObject obj;
 };
 
 #endif // JSON_H

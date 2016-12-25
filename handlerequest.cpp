@@ -2,9 +2,10 @@
 #include "json.h"
 #include "def.h"
 #include "sqlconn.h"
+#include <QDebug>
 
 // Handle user or driver register.
-int reg_userOrDriver(Json inJson, Json outJson)
+int reg_userOrDriver(Json inJson)
 {
     int ret = 0;
 
@@ -18,8 +19,9 @@ int reg_userOrDriver(Json inJson, Json outJson)
 
     QString sql = QString("insert into passenger values('%1','%2','%3','%4','%5','%6','%7')").arg(id).arg(username)
                     .arg(password).arg(age).arg(sex).arg(tel).arg(cardid);
+
     ret = SqlConn::getInstance()->insert(sql);
-    qDebug() << "reg_userOrDriver ret :" << ret << endl;
+
     if (ret != 0)
     {
         qDebug() << "insert data err: " << ret << endl;
@@ -29,15 +31,13 @@ int reg_userOrDriver(Json inJson, Json outJson)
 }
 
 // Handle user or driver login.
-int login_userOrDriver(Json inJson, Json outJson)
+int login_userOrDriver(Json inJson)
 {
     int ret = 0;
     QByteArray *out = new QByteArray;
-
     QString username = inJson.parse(HC_USERNAME).toString();
     QString password = inJson.parse(HC_PASSWORD).toString();
-
-    QString sql = QString("select * from passenger where username=%1 and password=%2").arg(username).arg(password);
+    QString sql = QString("select * from passenger where username='%1' and password='%2'").arg(username).arg(password);
 
     ret = SqlConn::getInstance()->selData(sql, out);
     if (ret <=0 )
@@ -45,8 +45,8 @@ int login_userOrDriver(Json inJson, Json outJson)
         qDebug() << "login err: %d" << ret << endl;
         return 1;
     }
-
-    return ret;
+    delete out;
+    return 0;
 }
 
 // Handle update driver position.
