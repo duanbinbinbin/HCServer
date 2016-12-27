@@ -1,85 +1,162 @@
-/* ************************************************************************
- *       Filename:  redis.cpp
- *    Description:  
- *        Version:  1.0
- *        Created:  12/23/2016 06:26:06 PM
- *       Revision:  none
- *       Compiler:  gcc
- *         Author:  YOUR NAME (), 
- *        Company:  
- * ************************************************************************/
+#include "Redis.h"
+#include "def.h"
+#include <QVector>
 
-#ifndef _REDIS_H_
-#define _REDIS_H_
-#include <iostream>
-#include <string.h>
-#include <string>
-#include <stdio.h>
-#include <hiredis/hiredis.h>
-#include <QByteArray>
-#include <QString>
+Redis::Redis(QObject *parent) : QObject(parent)
+{
+    context = redisConnect(HC_IP, HC_REDIS_PORT);
+    if (context->err)
+    {
+        redisFree(context);
+        context = NULL;
+        qDebug() << "Connect to redisServer faile";
+        exit(1);
+    }
+}
 
-class Redis {
-	public:
-        static Redis* getRedis()
-        {
-            static Redis* _redis = NULL;
-            if (_redis == NULL)
-            {
-                _redis = new Redis;
-            }
-            return _redis;
-        }
+int Redis::getList(QByteArray& key, QVector<QString>& resultList)
+{
+    int ret = 0;
+    if (key.isEmpty())
+    {
+        qDebug() << "get list key is null";
+        return -1;
+    }
+    char cmd[1024] = { 0 };
+    sprintf(cmd, "lrange %s 0 -1", key.data());
+    reply = (redisReply*)redisCommand(context, cmd);
+    if(reply->type != REDIS_REPLY_ARRAY)
+    {
+        qDebug() << "Failed to execute command";
+        freeReplyObject(reply);
+        redisFree(context);
+        return -1;
+    }
+    size_t i = 0;
+    for (i = 0; i < reply->elements; ++i)
+    {
+        resultList.push_back(QString(reply->element[i]->str));
+    }
+    freeReplyObject(reply);
+    reply = NULL;
+    return ret;
+}
 
-		~Redis() {
-			this->_connect = NULL;
-			this->_reply = NULL;
-		} 
+int Redis::setList(QByteArray &key, QByteArray &value)
+{
+    int ret = 0;
+    if (key.isEmpty() || value.isEmpty())
+    {
+        qDebug() << "set list key or value is null";
+        return -1;
+    }
+    char cmd[1024] = { 0 };
+    sprintf(cmd, "rpush %s %s", key.data(), value.data());
+    reply = (redisReply*)redisCommand(context, cmd);
+    if(reply == NULL)
+    {
+        qDebug() << "reply is null!";
+        redisFree(context);
+        return -1;
+    }
+    if(!(reply->type == REDIS_REPLY_INTEGER))
+    {
+        qDebug() << "Execute command failed!";
+        freeReplyObject(reply);
+        redisFree(context);
+        return -1;
+    }
+    freeReplyObject(reply);
+    reply = NULL;
+    return ret;
+}
 
-		bool connect(std::string host, int port) {
-			this->_connect = redisConnect(host.c_str(), port);
-			if(this->_connect != NULL && this->_connect->err) {
-				printf("connect error: %s\n", this->_connect->errstr);
-				return 0;
-            }
-            return 1;
-		} 
+int Redis::del(QByteArray &key)
+{
+    int ret = 0;
+    if (key.isEmpty())
+    {
+        qDebug() << "key is null";
+        return -1;
+    }
+    char cmd[1024] = { 0 };
+    sprintf(cmd, "del %s", key.data());
+    reply = (redisReply*)redisCommand(context, cmd);
+    if(reply->type != REDIS_REPLY_INTEGER)
+    {
+        qDebug() << "Failed to execute command";
+        freeReplyObject(reply);
+        redisFree(context);
+        return -1;
+    }
+    freeReplyObject(reply);
+    reply = NULL;
+    return ret;
+}
 
-        QByteArray get(QString key)
-        {
-            std::string buf = get(key.toStdString());
-            return QByteArray::fromStdString(buf);
-        }
+int Redis::setHash(QByteArray &name, QByteArray &key, QByteArray &value)
+{
+    int ret = 0;
+    if (name.isEmpty() || key.isEmpty() || value.isEmpty())
+    {
+        qDebug() << "set list name, key or value is null";
+        return -1;
+    }
+    char cmd[1024] = { 0 };
+    sprintf(cmd, "hset %s %s %s", name.data(), key.data(), value.data());
+    reply = (redisReply*)redisCommand(context, cmd);
+    if(reply == NULL)
+    {
+        qDebug() << "reply is null!";
+        redisFree(context);
+        return -1;
+    }
+    if(!(reply->type == REDIS_REPLY_INTEGER))
+    {
+        qDebug() << "Execute command failed!";
+        freeReplyObject(reply);
+        redisFree(context);
+        return -1;
+    }
+    freeReplyObject(reply);
+    reply = NULL;
+    return ret;
+}
 
-        void set(QString key, QByteArray value)
-        {
-            set(key.toStdString(), value.toStdString());
-        }
+int Redis::getHash(QByteArray &name, QByteArray &key, QByteArray& result)
+{
+    int ret = 0;
+    if (name.isEmpty() || key.isEmpty())
+    {
+        qDebug() << "get hash name or key is null";
+        return -1;
+    }
+    char cmd[1024] = { 0 };
+    sprintf(cmd, "hget %s %s", name.data(), key.data());
+    reply = (redisReply*)redisCommand(context, cmd);
+    if(reply->type != REDIS_REPLY_STRING)
+    {
+        qDebug() << "Failed to execute command";
+        freeReplyObject(reply);
+        redisFree(context);
+        return -1;
+    }
+    result = QByteArray(reply->str);
+    freeReplyObject(reply);
+    reply = NULL;
+    return ret;
+}
 
-	private:
-
-        Redis(){}
-
-        Redis(const Redis&){}
-
-        Redis& operator=(const Redis&){}
-
-		redisContext* _connect;
-        redisReply* _reply;
-
-        void set(std::string key, std::string value) {
-            redisCommand(this->_connect, "SET %s %s", key.c_str(), value.c_str());
-        }
-
-        std::string get(std::string key) {
-            this->_reply = (redisReply*)redisCommand(this->_connect,
-                    "GET %s", key.c_str());
-            std::string str = this->_reply->str;
-            freeReplyObject(this->_reply);
-            return str;
-        }
-};
-#endif
-
-
-
+Redis::~Redis()
+{
+    if (reply != NULL)
+    {
+        freeReplyObject(reply);
+        reply = NULL;
+    }
+    if (context != NULL)
+    {
+        redisFree(context);
+        context = NULL;
+    }
+}

@@ -29,5 +29,9 @@
 #define HC_LNGEND "lng2"
 #define HC_TEL "tel"
 #define HC_UPDATEUSERPOS "updatepos"
+#define HC_IDENTITY "identity"
+#define HC_PASSENGER "passenger"
+#define HC_IP "127.0.0.1"
+#define HC_REDIS_PORT 6379
 
 #endif // DEF_H

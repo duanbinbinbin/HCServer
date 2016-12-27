@@ -4,17 +4,17 @@ HEADERS += \
     json.h \
     util.h \
     sqlconn.h \
-    hcdef.h
+    hcdef.h \
+    Redis.h
 
 SOURCES += \
     main.cpp \
     json.cpp \
     handlerequest.cpp \
     HCServer.cpp \
-    main1.cpp \
-    redis.cpp \
     util.cpp \
-    sqlconn.cpp
+    sqlconn.cpp \
+    Redis.cpp
 
 CONFIG += TUFAO1 C++11
 LIBS += -lhiredis

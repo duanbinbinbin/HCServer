@@ -85,7 +85,7 @@ int SqlConn::selData(QString str,QByteArray* array)
     }
 
     mysql_free_result(result);
-    return k;
+    return 0;
 }
 
 int SqlConn::update(QString str)

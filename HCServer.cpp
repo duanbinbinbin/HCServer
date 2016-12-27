@@ -33,14 +33,14 @@ HCServer::HCServer(QObject *parent) : QObject(parent)
 * return:
 *   int: success return 0, error return is not 0.
 */
-int handle_reg(Json& json, QByteArray &result)
+int handle_reg(QByteArray& inData, QByteArray &result)
 {
     int ret = 0;
     Json res_json;
 
     ret = res_json.insert(HC_CMD, HC_REG);
     // user or driver register interface ...
-    ret = reg_userOrDriver(json);
+    ret = reg_userOrDriver(inData);
     if (ret != 0)
     {
         res_json.insert(QString(HC_RESULT), QString(HC_ERR));
@@ -64,14 +64,13 @@ int handle_reg(Json& json, QByteArray &result)
 * return:
 *   int: success return 0, error return is not 0.
 */
-int handle_login(Json& json, QByteArray &result)
+int handle_login(QByteArray& inData, QByteArray &result)
 {
     int ret = 0;
     Json res_json;
-
     res_json.insert(HC_CMD, HC_LOGIN);
     // driver or user login interface ...
-    ret = login_userOrDriver(json);
+    ret = login_userOrDriver(inData);
     if (ret != 0)
     {
         res_json.insert(HC_RESULT, HC_ERR);
@@ -80,7 +79,7 @@ int handle_login(Json& json, QByteArray &result)
     }
     else
     {
-        res_json.insert(HC_RESULT, HC_OK);
+        res_json.insert(HC_RESULT, HC_OK); 
     }
     result = res_json.toJson();
     return ret;
@@ -99,11 +98,9 @@ int handle_driverUpdatepos(Json& json, QByteArray &result)
 {
     int ret = 0;
     Json res_json;
-
     res_json.insert(HC_CMD, HC_UPDATEDRIVERPOS);
-
     // update driver position interface ...
-    ret = update_driver_pos(json, res_json);
+    ret = update_driver_pos(json);
     if (ret != 0)
     {
         res_json.insert(HC_RESULT, HC_ERR);
@@ -114,9 +111,7 @@ int handle_driverUpdatepos(Json& json, QByteArray &result)
     {
         res_json.insert(HC_RESULT, HC_OK);
     }
-
     result = res_json.toJson();
-
     return ret;
 }
 
@@ -137,7 +132,7 @@ int handle_driver_status(Json& json, QByteArray &result)
     res_json.insert(HC_CMD, HC_UPDATEDRIVERSTATUS);
 
     // update driver status interface ...
-    ret = update_driver_status(json, res_json);
+    ret = update_driver_status(json);
     if (ret != 0)
     {
         res_json.insert(HC_RESULT, HC_ERR);
@@ -148,9 +143,7 @@ int handle_driver_status(Json& json, QByteArray &result)
     {
         res_json.insert(HC_RESULT, HC_OK);
     }
-
     result = res_json.toJson();
-
     return ret;
 }
 
@@ -272,15 +265,16 @@ int requestData(Tufao::HttpServerRequest &request, QByteArray &result)
     QByteArray data = request.readBody();
 
     Json json(data);
+    QByteArray inData = json.toJson();
     QString cmd = json.parse(HC_CMD).toString();
 
     if (cmd == HC_REG)                                  // driver or user register
     {
-         ret = handle_reg(json, result);
+         ret = handle_reg(inData, result);
     }
     else if(cmd == HC_LOGIN)                            // driver or user login
     {
-        ret = handle_login(json, result);
+        ret = handle_login(inData, result);
     }
     else if (cmd == HC_UPDATEDRIVERPOS)                 // diver update position
     {
